@@ -1,6 +1,6 @@
 # TestAngular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.1.
+This is my sample angular project, meant to demonstrate my capability in building a scalable and highly maintainable angular web app.
 
 ## Development server
 
