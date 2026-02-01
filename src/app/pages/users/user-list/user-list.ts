@@ -1,14 +1,19 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { Users } from '../../../service/users/users';
+import { UsersService } from '../../../service/users/users';
 
 @Component({
   selector: 'app-user-list',
-  imports: [CommonModule, RouterLink],
+  standalone: true,
+  imports: [RouterLink],
   templateUrl: './user-list.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserList {
-  private userService = inject(Users);
-  users$ = this.userService.getUsers();
+  private userService = inject(UsersService);
+
+  usersResource = rxResource({
+    loader: () => this.userService.getUsers(),
+  });
 }

@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-export interface User {
+import { inject } from '@angular/core';
+import { Observable, catchError, throwError } from 'rxjs';
+export interface IUser {
   id: number;
   name: string;
   username: string;
@@ -28,17 +29,23 @@ export interface User {
 @Injectable({
   providedIn: 'root',
 })
-export class Users {
-  private apiUrl = 'https://jsonplaceholder.typicode.com/users';
+export class UsersService {
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = 'https://jsonplaceholder.typicode.com/users';
 
-  constructor(private http: HttpClient) {}
-
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.apiUrl);
+  getUsers(): Observable<IUser[]> {
+    return this.http.get<IUser[]>(this.apiUrl).pipe(catchError(this.handleError));
   }
 
-  getUserById(id: number): Observable<User> {
-    const url = `${this.apiUrl}/${id}`;
-    return this.http.get<User>(url);
+  /**
+   * Fetches a single user by ID.
+   */
+  getUserById(id: number): Observable<IUser> {
+    return this.http.get<IUser>(`${this.apiUrl}/${id}`).pipe(catchError(this.handleError));
+  }
+
+  private handleError(error: any) {
+    console.error('API Error:', error);
+    return throwError(() => new Error('Something went wrong with the data fetch.'));
   }
 }
