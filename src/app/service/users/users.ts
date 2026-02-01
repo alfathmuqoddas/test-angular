@@ -1,7 +1,6 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { inject } from '@angular/core';
-import { Observable, catchError, throwError } from 'rxjs';
+import { httpResource } from '@angular/common/http';
+
 export interface IUser {
   id: number;
   name: string;
@@ -30,22 +29,13 @@ export interface IUser {
   providedIn: 'root',
 })
 export class UsersService {
-  private readonly http = inject(HttpClient);
   private readonly apiUrl = 'https://jsonplaceholder.typicode.com/users';
 
-  getUsers(): Observable<IUser[]> {
-    return this.http.get<IUser[]>(this.apiUrl).pipe(catchError(this.handleError));
+  getUsers() {
+    return httpResource<IUser[]>(() => this.apiUrl);
   }
 
-  /**
-   * Fetches a single user by ID.
-   */
-  getUserById(id: number): Observable<IUser> {
-    return this.http.get<IUser>(`${this.apiUrl}/${id}`).pipe(catchError(this.handleError));
-  }
-
-  private handleError(error: any) {
-    console.error('API Error:', error);
-    return throwError(() => new Error('Something went wrong with the data fetch.'));
+  getUserById(id: () => string | undefined) {
+    return httpResource<IUser>(() => `${this.apiUrl}/${id()}`);
   }
 }

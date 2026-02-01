@@ -1,21 +1,15 @@
-import { Component, inject, input, resource, ChangeDetectionStrategy } from '@angular/core';
-import { switchMap } from 'rxjs/operators';
-import { Users } from '../../../service/users/users';
+import { Component, inject, input } from '@angular/core';
+import { UsersService } from '../../../service/users/users';
 
 @Component({
   selector: 'app-user-detail',
-  standalone: true,
   imports: [],
   templateUrl: './user-detail.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserDetail {
-  private userService = inject(Users);
+  private userService = inject(UsersService);
 
-  userId = input.required({ transform: (v: string) => Number(v) });
+  userId = input.required<string>();
 
-  userResource = resource({
-    request: () => ({ id: this.userId() }),
-    loader: ({ request }) => this.userService.getUserById(request.id),
-  });
+  userReq = this.userService.getUserById(this.userId);
 }
